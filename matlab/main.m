@@ -4,13 +4,13 @@ clc;
 
 addpath('code');
 
-load('db/Удары/аперкот/data.mat');
-load('db/Удары/кросс/data.mat');
-load('db/Удары/свинг/data.mat');
-load('db/Удары/сила удара/data.mat');
-% load('db/Удары/p_3/data.mat');
-% load('db/Удары/p_4/data.mat');
-% load('D:\BioWave\motion\matlab\db\Удары\сила удара грав\data.mat')
+% load('db/Удары/аперкот/data.mat'); fs=1000;
+% load('db/Удары/кросс/data.mat'); fs=1000;
+% load('db/Удары/свинг/data.mat'); fs=1000;
+load('db/Удары/сила удара/data.mat'); fs=1000;
+% load('db/Удары/p_3/data.mat'); fs=20;
+% load('db/Удары/p_4/data.mat'); fs=20;
+% load('D:\BioWave\motion\matlab\db\Удары\сила удара грав\data.mat'); fs=1000;
 
 % Check for NaNs
 if (isnan(acc_x(end)) || isnan(acc_y(end)) || isnan(acc_y(end)) || ...
@@ -25,45 +25,10 @@ end
 
 % Signal and processing parameters
 len=numel(acc_x);
-% 1/mean(diff(t))
-fs=1000;
 t=0:1/fs:(len-1)/fs;
 skip=round(1*fs);
 
 % Preprocessing
-% acc_x=acc_x-mean(acc_x(1:100));
-% acc_y=acc_y-mean(acc_y(1:100));
-% acc_z=acc_z-mean(acc_z(1:100));
-% acc_x=acc_x-movAvr.vecCent(acc_x,4*fs)';
-% acc_y=acc_y-movAvr.vecCent(acc_y,4*fs)';
-% acc_z=acc_z-movAvr.vecCent(acc_z,4*fs)';
-% acc_x=acc_x-mean(acc_x);
-% acc_y=acc_y-mean(acc_y);
-% acc_z=acc_z-mean(acc_z);
-% sz=3000;
-% for i=1:(sz+1):len
-%   if i+sz<=len
-%     acc_x(i:i+sz)=acc_x(i:i+sz)-mean(acc_x(i:i+sz));
-%     acc_y(i:i+sz)=acc_y(i:i+sz)-mean(acc_y(i:i+sz));
-%     acc_z(i:i+sz)=acc_z(i:i+sz)-mean(acc_z(i:i+sz));
-%   else
-%     acc_x(i:len)=acc_x(i:len)-mean(acc_x(i:len));
-%     acc_y(i:len)=acc_y(i:len)-mean(acc_y(i:len));
-%     acc_z(i:len)=acc_z(i:len)-mean(acc_z(i:len));
-%   end
-% end
-
-% N    = 2000;      % Order
-% Fc   = 0.2;        % Cutoff Frequency
-% flag = 'scale';  % Sampling Flag
-% % Create the window vector for the design algorithm.
-% win = hann(N+1);
-% % Calculate the coefficients using the FIR1 function.
-% b  = fir1(N, Fc/(fs/2), 'high', win, flag);
-% acc_x=filtfilt(b,1,acc_x);
-% acc_y=filtfilt(b,1,acc_y);
-% acc_z=filtfilt(b,1,acc_z);
-
 [b,i]=hist(acc_x,20);
 [~,idx]=max(b);
 acc_x=acc_x-i(idx);
@@ -75,12 +40,8 @@ acc_y=acc_y-i(idx);
 acc_z=acc_z-i(idx);
 
 % Motion detection
-% m=(log(sqrt(acc_x.*acc_x+acc_y.*acc_y+acc_z.*acc_z)));
-% m=movAvr.vecCent(m,60);
-m=log(sqrt(acc_x.*acc_x.*acc_x.*acc_x+acc_y.*acc_y.*acc_y.*acc_y+acc_z.*acc_z.*acc_z.*acc_z));
+m=(log(sqrt(acc_x.*acc_x+acc_y.*acc_y+acc_z.*acc_z)));
 m=movAvr.vecCent(m,round(fs/2)); %10
-% m=accMovAv(m,0.999);
-% m(1:end-999)=m(1000:end);
 m=m-mean(m);
 m(m<0)=0;
 
@@ -164,25 +125,3 @@ ylabel('a_X_Y_Z, m/s^2');
 grid on;
 
 linkaxes(hs,'x');
-% pause;
-% 
-% figure
-% x_pos=accMovAv(accMovAv(acc_x,0.999),0.999);
-% y_pos=accMovAv(accMovAv(acc_y,0.999),0.999);
-% z_pos=accMovAv(accMovAv(acc_z,0.999),0.999);
-% subplot(3,2,1);
-% plot(t,x_pos);
-% grid on;
-% subplot(3,2,3);
-% plot(t,y_pos);
-% grid on;
-% subplot(3,2,5);
-% plot(t,z_pos);
-% grid on;
-% subplot(3,2,[2,4,6]);
-% % XYZ = stream3(x_pos,y_pos,z_pos,0,0,0) 
-% grid on;
-% comet3(x_pos,y_pos,z_pos);
-% set(gca,'EraseMode','none');
-
-

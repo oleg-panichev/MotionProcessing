@@ -1,0 +1,4 @@
+MotionProcessing
+================
+
+Accelerometer data processing
